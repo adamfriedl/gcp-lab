@@ -60,7 +60,7 @@ Inventory still comes from **`terraform output`** (see **`GCP_LAB_TERRAFORM_DIR`
 
 Outbound install requires the VM reach **`pkgs.tailscale.com`**. IAP-only VMs have **no public IP** unless you **`enable_external_public_ip`** — **`infra`** defaults **`enable_cloud_nat = true`** (Cloud Router/NAT module) after **`terraform apply`**. Without NAT or another egress path you see **`Network is unreachable`** during **`ansible.builtin.get_url`** / **`apt`**.
 
-The **`tailscale`** role installs from Tailscale’s APT repo on Debian/Ubuntu and joins with an **auth key** via **`TS_AUTHKEY`** (**`no_log`** on the join step). If **`tailscale_auth_key`** is empty or unset, the role is skipped and **`site.yml`** still succeeds.
+The **`tailscale`** role installs from Tailscale’s APT repo on Debian/Ubuntu and joins using **`tailscale up --auth-key=…`** ([auth key docs](https://tailscale.com/docs/features/access-control/auth-keys#register-a-node-with-the-auth-key)). The join task uses **`no_log`** so Ansible omits output; if **`tailscale_auth_key`** is empty or unset, the role is skipped and **`site.yml`** still succeeds.
 
 **Vars load automatically:** put Tailscale overrides in **`inventory/group_vars/gcp_lab/tailscale_secrets.yml`** (gitignored). Ansible merges **`inventory/group_vars/gcp_lab/*.yml`** for group **`gcp_lab`** whenever you **`ansible-playbook site.yml`** — nothing to pass **`-e @...`** unless you prefer it.
 
