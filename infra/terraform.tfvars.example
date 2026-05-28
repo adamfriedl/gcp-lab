@@ -1,7 +1,7 @@
 # Copy to terraform.tfvars in this directory (infra/), or use TF_VAR_* in CI.
 # Use the project *ID* (below), not only the Console display name "gcp-lab".
 
-project_id = "gcp-lab-497423"
+project_id = "YOUR_PROJECT_ID"
 region     = "us-central1"
 zone       = "us-central1-c"
 

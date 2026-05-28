@@ -1,7 +1,6 @@
 variable "project_id" {
   description = "GCP project ID used by the Google provider."
   type        = string
-  default     = "gcp-lab-497423"
 
   validation {
     condition     = length(var.project_id) > 0 && !can(regex("^\\s*$", var.project_id))

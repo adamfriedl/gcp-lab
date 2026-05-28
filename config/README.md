@@ -81,9 +81,9 @@ You can instead pass **`-e @path/to/secrets.yml`** or **`-e tailscale_auth_key=�
 
 Re-runs **`tailscale up`** when already authenticated to apply prefs so flags like **`tailscale_enable_ssh_server`** (**`--ssh`**) take effect on machines that were already enrolled.
 
-### Exit node
+### Exit node (optional — off by default)
 
-Set **`tailscale_exit_node`** in **`tailscale_secrets.yml`** to route the VM’s outbound traffic through a peer that advertises an exit node (your **`apple-tv`** already does). You can use the **hostname** — Tailscale accepts **`apple-tv`**, not only the **`100.x`** IP.
+**Default is no exit node** — outbound internet uses **Cloud NAT** (Terraform). Set **`tailscale_exit_node`** (e.g. **`apple-tv`**) only if you want egress via home; that **breaks IAP/gcloud SSH** on the VM (use **`tailscale ssh`** instead).
 
 After the VM joins, the role optionally **resolves the hostname** from **`tailscale status --json`** (same peer list the CLI uses) and runs **`tailscale set --exit-node=…`**. **`accept-routes`** is turned on automatically when an exit node is configured.
 
@@ -95,6 +95,8 @@ tailscale status --json | jq -r '.Peer[] | select(.HostName=="apple-tv") | .Tail
 ```
 
 Or pin the IP and skip lookup: **`tailscale_exit_node: "100.119.241.51"`** and **`tailscale_exit_node_resolve: false`**.
+
+**IAP + exit node:** turning on an exit node changes the VM’s default route. That can **drop an in-flight Ansible SSH session** (you may see **`unreachable`** on the last task even though join succeeded). The role **defers** **`tailscale set --exit-node=…`** by a few seconds so the play can finish; re-run **`ansible gcp_lab -m ping`** afterward to confirm IAP still works.
 
 ### Tailscale SSH (`tailscale ssh`)
 
